@@ -1,0 +1,17 @@
+{
+  "name": "Sniper CRM",
+  "short_name": "Sniper CRM",
+  "description": "Git-Backed CRM for High-Ticket Sales Pipeline",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#6366f1",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg"
+    }
+  ]
+}

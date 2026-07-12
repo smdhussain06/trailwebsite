@@ -1,0 +1,12 @@
+[
+  { "id": 1, "company": "Anbre Interiors", "dm": "S.R. Balaji", "pitch": "Instant-load mobile UI framework", "status": "Target Locked" },
+  { "id": 2, "company": "Empatio Architecture", "dm": "Ar. Chandhana Ramesh", "pitch": "Editorial-grade interactive lookbook", "status": "Target Locked" },
+  { "id": 3, "company": "Hina Designer Boutique", "dm": "Rameez Hina", "pitch": "48-hour emergency e-commerce rescue", "status": "Target Locked" },
+  { "id": 4, "company": "DA Eventz", "dm": "Punithan Bhaskaran", "pitch": "Backend PWA Logistics Tracker", "status": "Target Locked" },
+  { "id": 5, "company": "Pawnwaala", "dm": "Mohanraj Sampathkumar", "pitch": "Secure database rebuild", "status": "Target Locked" },
+  { "id": 6, "company": "PANTA Staffing", "dm": "Neelima P.", "pitch": "DNS restoration + AI Lead Engine", "status": "Target Locked" },
+  { "id": 7, "company": "Branditude Corporate", "dm": "Bala Murugan N.", "pitch": "B2B bulk-ordering portal", "status": "Target Locked" },
+  { "id": 8, "company": "Born Natural Agro", "dm": "Angel-Invested Team", "pitch": "High-performance D2C vault", "status": "Target Locked" },
+  { "id": 9, "company": "Mudra Homecrafters", "dm": "Ramya Raj", "pitch": "Voice-to-BOQ agentic framework", "status": "Target Locked" },
+  { "id": 10, "company": "The Architecture Story", "dm": "Deepak Jawahar", "pitch": "Agentic sales pipeline", "status": "Target Locked" }
+]
