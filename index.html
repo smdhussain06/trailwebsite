@@ -6,7 +6,7 @@
   <title>Sniper CRM</title>
   
   <!-- SEO & Mobile Config -->
-  <meta name="description" content="Material Design 3 Git-Backed CRM for high-ticket sales pipelines.">
+  <meta name="description" content="Material Design 3 Git-Backed CRM with fully customizable fields.">
   <meta name="theme-color" content="#111318">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="logo.jpg">
@@ -137,7 +137,6 @@
   <!-- Main Grid List -->
   <main class="flex-grow px-4 py-4 max-w-2xl mx-auto w-full pb-28">
     <div id="clients-container" class="flex flex-col gap-4">
-      <!-- Loading skeleton -->
       <div class="bg-material-surface border border-material-outlineVariant/20 rounded-[24px] p-5 animate-pulse flex flex-col gap-4">
         <div class="h-5 bg-material-surfaceVariant rounded w-2/3"></div>
         <div class="h-4 bg-material-surfaceVariant rounded w-1/3"></div>
@@ -284,6 +283,19 @@
         <div>
           <label class="block font-medium text-material-textSecondary mb-1">Pain Points & Remarks</label>
           <textarea id="form-remarks" rows="2" placeholder="Enter key remarks, paint points, follow ups..." class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary"></textarea>
+        </div>
+
+        <!-- CUSTOM FIELDS SECTION -->
+        <div class="border-t border-material-outlineVariant/20 pt-4">
+          <div class="flex justify-between items-center mb-3">
+            <label class="block font-bold text-material-text text-sm">Custom Fields & Social Links</label>
+            <button type="button" onclick="addCustomFieldRow('', '')" class="px-3 py-1 bg-material-primaryContainer text-material-onPrimaryContainer border border-material-primary/30 rounded-full text-[10px] font-bold hover:bg-material-surfaceVariant transition-colors">
+              + Add Field
+            </button>
+          </div>
+          <div id="custom-fields-container" class="space-y-2">
+            <!-- Dynamic rows will be inserted here -->
+          </div>
         </div>
 
         <!-- Form Footer -->
@@ -520,6 +532,39 @@
           social: getLinkChip(client.company, client.social, 'Socials', 'getSocialLink')
         };
 
+        // Render fully customizable links and topic texts
+        let customChipsHtml = '';
+        let customTextsHtml = '';
+        
+        if (client.customFields && client.customFields.length > 0) {
+          client.customFields.forEach(field => {
+            const val = field.value.trim();
+            if (!val) return;
+            
+            // Check if it's a link (starts with http/https, mailto, tel, or has a domain layout)
+            const isUrl = /^(https?:\/\/|mailto:|tel:|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i.test(val);
+            
+            if (isUrl) {
+              let url = val;
+              if (!/^(https?:|mailto:|tel:)/i.test(url)) {
+                url = 'http://' + url;
+              }
+              customChipsHtml += `
+                <a href="${url}" target="_blank" class="text-[10px] font-medium px-2 py-0.5 rounded-full border border-material-primary/45 bg-[#2b4470]/30 text-material-primary hover:bg-[#2b4470]/60 transition-colors flex items-center gap-1">
+                  ✓ ${field.title}
+                </a>
+              `;
+            } else {
+              customTextsHtml += `
+                <div class="bg-material-bg/30 rounded-xl p-2.5 border border-material-outlineVariant/5">
+                  <span class="block text-[8px] font-bold text-material-textMuted uppercase tracking-wider mb-0.5">${field.title}</span>
+                  <p class="text-xs text-material-textSecondary leading-relaxed">${field.value}</p>
+                </div>
+              `;
+            }
+          });
+        }
+
         card.className = `bg-material-surface border ${borderClass} rounded-[24px] p-5 flex flex-col gap-3 transition-all relative overflow-hidden`;
         
         card.innerHTML = `
@@ -559,6 +604,7 @@
             ${linkConfig.email}
             ${linkConfig.phone}
             ${linkConfig.social}
+            ${customChipsHtml}
           </div>
 
           <!-- Pitch & Remarks -->
@@ -578,6 +624,9 @@
               <p class="text-xs text-material-textMuted leading-relaxed">${client.remarks}</p>
             </div>
             ` : ''}
+            
+            <!-- Custom Texts / Topic based fields -->
+            ${customTextsHtml}
           </div>
 
           <!-- Status Select and Response Toggle Footer -->
@@ -622,6 +671,27 @@
           </a>
         `;
       }
+    }
+
+    // Dynamic row addition for edit modal
+    function addCustomFieldRow(title = '', value = '') {
+      const container = document.getElementById('custom-fields-container');
+      if (!container) return;
+      
+      const rowId = 'row-' + Date.now() + Math.random().toString(36).substr(2, 5);
+      const row = document.createElement('div');
+      row.className = 'custom-field-row flex items-center gap-2 border-b border-material-outlineVariant/10 pb-2';
+      row.id = rowId;
+      
+      row.innerHTML = `
+        <input type="text" placeholder="Title (e.g. YouTube)" value="${title}" class="custom-field-title w-1/3 px-2 py-1.5 bg-material-bg border border-material-outlineVariant rounded text-xs text-material-text focus:outline-none focus:border-material-primary">
+        <input type="text" placeholder="Link/Text Remarks..." value="${value}" class="custom-field-value w-7/12 px-2 py-1.5 bg-material-bg border border-material-outlineVariant rounded text-xs text-material-text focus:outline-none focus:border-material-primary">
+        <button type="button" onclick="document.getElementById('${rowId}').remove()" class="w-1/12 text-material-error hover:text-[#ffdad6] font-bold text-center text-sm">
+          ×
+        </button>
+      `;
+      
+      container.appendChild(row);
     }
 
     // Toggle Response
@@ -670,22 +740,21 @@
       const title = document.getElementById('client-modal-title');
       const deleteBtn = document.getElementById('delete-client-btn');
       const form = document.getElementById('client-form');
+      const fieldsContainer = document.getElementById('custom-fields-container');
       
-      if (!title || !form) return;
+      if (!title || !form || !fieldsContainer) return;
       
       form.reset();
+      fieldsContainer.innerHTML = '';
       
       if (id === null) {
-        // Adding client mode
         title.textContent = 'Add New Target';
         document.getElementById('form-client-id').value = '';
         if (deleteBtn) deleteBtn.classList.add('hidden');
         
-        // Defaults
         document.getElementById('form-status').value = 'Target Locked';
         document.getElementById('form-response').value = 'No';
       } else {
-        // Editing client mode
         const client = clients.find(c => c.id === id);
         if (!client) return;
         
@@ -703,6 +772,13 @@
         document.getElementById('form-response').value = client.response || 'No';
         document.getElementById('form-pitch').value = client.pitch || '';
         document.getElementById('form-remarks').value = client.remarks || '';
+        
+        // Load custom fields
+        if (client.customFields && client.customFields.length > 0) {
+          client.customFields.forEach(f => {
+            addCustomFieldRow(f.title, f.value);
+          });
+        }
         
         if (deleteBtn) deleteBtn.classList.remove('hidden');
       }
@@ -732,15 +808,25 @@
       const pitchVal = document.getElementById('form-pitch').value.trim();
       const remarksVal = document.getElementById('form-remarks').value.trim();
       
+      // Extract custom fields values
+      const customFieldRows = document.querySelectorAll('.custom-field-row');
+      const customFields = [];
+      customFieldRows.forEach(row => {
+        const title = row.querySelector('.custom-field-title').value.trim();
+        const value = row.querySelector('.custom-field-value').value.trim();
+        if (title) {
+          customFields.push({ title, value });
+        }
+      });
+      
       if (!companyVal || !dmVal || !locationVal) {
         showToast('Required fields are missing', 'error');
         return;
       }
       
       if (idVal === '') {
-        // Add new target
         const newClient = {
-          id: Date.now(), // Generate numeric unique ID
+          id: Date.now(),
           company: companyVal,
           dm: dmVal,
           location: locationVal,
@@ -752,12 +838,12 @@
           social: socialVal,
           response: responseVal,
           pitch: pitchVal,
-          remarks: remarksVal
+          remarks: remarksVal,
+          customFields: customFields
         };
         clients.push(newClient);
         showToast(`Added ${companyVal} to pipeline`, 'success');
       } else {
-        // Edit existing target
         const targetId = parseInt(idVal);
         const idx = clients.findIndex(c => c.id === targetId);
         if (idx !== -1) {
@@ -773,6 +859,7 @@
           clients[idx].response = responseVal;
           clients[idx].pitch = pitchVal;
           clients[idx].remarks = remarksVal;
+          clients[idx].customFields = customFields;
           showToast(`Updated details for ${companyVal}`, 'success');
         }
       }
