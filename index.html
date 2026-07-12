@@ -2,16 +2,16 @@
 <html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Sniper CRM</title>
   
   <!-- SEO & Mobile Config -->
-  <meta name="description" content="Minimalist Material Design 3 Git-Backed CRM for high-ticket sales.">
+  <meta name="description" content="Material Design 3 Git-Backed CRM for high-ticket sales pipelines.">
   <meta name="theme-color" content="#111318">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="logo.jpg">
   
-  <!-- Google Fonts (Roboto & Product Sans proxy) -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -31,13 +31,14 @@
               bg: '#111318',
               surface: '#1b1b1f',
               surfaceVariant: '#232429',
-              primary: '#a8c7fa', // Classic Google Blue accent
+              primary: '#a8c7fa', // Google blue
               onPrimary: '#062e6f',
               primaryContainer: '#2b4470',
               onPrimaryContainer: '#d6e2ff',
               secondary: '#c2c6dc',
               secondaryContainer: '#2b2e3b',
               error: '#ffb4ab',
+              onError: '#690005',
               outline: '#8e9099',
               outlineVariant: '#44474e',
               text: '#e3e2e6',
@@ -51,12 +52,10 @@
   </script>
 
   <style>
-    /* Prevent default tap highlight colors on mobile browsers */
     * {
       -webkit-tap-highlight-color: transparent;
     }
     
-    /* Elegant Material 3 Style Scrollbars */
     ::-webkit-scrollbar {
       width: 4px;
       height: 4px;
@@ -69,7 +68,6 @@
       border-radius: 999px;
     }
     
-    /* Horizontal scrolling chips list helper */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -77,39 +75,34 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-
-    /* Outlined link styling */
-    .m3-link {
-      color: #a8c7fa;
-      transition: color 0.15s ease, text-decoration-color 0.15s ease;
-      word-break: break-all;
-    }
-    .m3-link:hover {
-      color: #c4d7ff;
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body class="bg-material-bg text-material-text min-h-screen font-sans flex flex-col antialiased">
 
-  <!-- Top App Search Bar (Google App Style) -->
+  <!-- Top App Header -->
   <header class="sticky top-0 z-40 bg-material-bg/95 backdrop-blur-md px-4 py-3 border-b border-material-outlineVariant/20 flex flex-col gap-2">
-    <div class="flex items-center gap-3 bg-material-surfaceVariant px-4 py-3 rounded-full border border-material-outlineVariant/30 shadow-md">
-      <!-- App Scope Target Logo -->
-      <div class="w-7 h-7 flex items-center justify-center border border-material-primary/60 rounded-full bg-material-primary/10">
-        <span class="w-1.5 h-1.5 bg-material-primary rounded-full"></span>
+    <div class="flex items-center gap-2">
+      <!-- Search Input -->
+      <div class="flex-grow flex items-center gap-3 bg-material-surfaceVariant px-4 py-2.5 rounded-full border border-material-outlineVariant/30 shadow-md">
+        <div class="w-6 h-6 shrink-0 flex items-center justify-center border border-material-primary/60 rounded-full bg-material-primary/10">
+          <span class="w-1 h-1 bg-material-primary rounded-full"></span>
+        </div>
+        <input type="text" id="search-input" oninput="filterClients()" placeholder="Search company, DM, pitch..." class="w-full bg-transparent text-sm text-material-text placeholder-material-textMuted focus:outline-none">
+        
+        <div id="sync-badge" class="hidden shrink-0 text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+          Unsaved
+        </div>
       </div>
       
-      <!-- Live Search Input -->
-      <input type="text" id="search-input" oninput="filterClients()" placeholder="Search targets, location, DM..." class="flex-grow bg-transparent text-sm text-material-text placeholder-material-textMuted focus:outline-none">
-      
-      <!-- Sync Status Badge -->
-      <div id="sync-badge" class="hidden text-[10px] font-medium tracking-wide uppercase px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
-        Unsaved
-      </div>
+      <!-- Add Target Button -->
+      <button onclick="openClientModal(null)" class="shrink-0 flex items-center justify-center bg-material-primaryContainer text-material-onPrimaryContainer border border-material-primary/30 p-2.5 rounded-full hover:bg-material-surfaceVariant transition-colors" title="Add New Lead">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+        </svg>
+      </button>
     </div>
 
-    <!-- M3 Filter Chips (Horizontal Scroll Box) -->
+    <!-- M3 Chips -->
     <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
       <button onclick="setFilter('All')" class="tab-chip shrink-0 px-4 py-1.5 rounded-full text-xs font-medium border border-material-primary bg-material-primaryContainer text-material-onPrimaryContainer transition-colors">
         All
@@ -129,9 +122,9 @@
     </div>
   </header>
 
-  <!-- Metrics Summary Block -->
-  <section class="px-4 py-2 mt-2">
-    <div class="flex items-center justify-between text-xs text-material-textMuted font-mono border-b border-material-outlineVariant/10 pb-2">
+  <!-- Summary Stats Bar -->
+  <section class="px-4 py-2 mt-1">
+    <div class="flex items-center justify-between text-[11px] text-material-textMuted font-mono border-b border-material-outlineVariant/10 pb-1.5">
       <div>PIPELINE: <span id="stat-total" class="text-material-primary font-bold">0</span></div>
       <div class="flex gap-3">
         <div>LKD: <span id="stat-locked" class="text-amber-400">0</span></div>
@@ -141,14 +134,13 @@
     </div>
   </section>
 
-  <!-- Clients Container -->
+  <!-- Main Grid List -->
   <main class="flex-grow px-4 py-4 max-w-2xl mx-auto w-full pb-28">
     <div id="clients-container" class="flex flex-col gap-4">
-      <!-- Loading Placeholder -->
-      <div class="bg-material-surface border border-material-outlineVariant/20 rounded-[28px] p-5 animate-pulse flex flex-col gap-4">
-        <div class="h-6 bg-material-surfaceVariant rounded w-3/4"></div>
-        <div class="h-4 bg-material-surfaceVariant rounded w-1/2"></div>
-        <div class="h-20 bg-material-surfaceVariant rounded"></div>
+      <!-- Loading skeleton -->
+      <div class="bg-material-surface border border-material-outlineVariant/20 rounded-[24px] p-5 animate-pulse flex flex-col gap-4">
+        <div class="h-5 bg-material-surfaceVariant rounded w-2/3"></div>
+        <div class="h-4 bg-material-surfaceVariant rounded w-1/3"></div>
       </div>
     </div>
   </main>
@@ -158,17 +150,16 @@
     <div class="flex items-center gap-3">
       <img src="logo.jpg" alt="Logo" class="w-8 h-8 rounded-lg">
       <div class="text-xs">
-        <p class="font-bold text-material-text">Install PWA App</p>
-        <p class="text-material-textMuted text-[10px]">Access pipeline offline</p>
+        <p class="font-bold text-material-text">Install CRM Web App</p>
       </div>
     </div>
-    <button id="pwa-install-btn" class="px-3 py-1 bg-material-primary text-material-onPrimary rounded-full text-xs font-bold transition-colors">Install</button>
+    <button id="pwa-install-btn" class="px-3.5 py-1 bg-material-primary text-material-onPrimary rounded-full text-xs font-bold transition-colors">Install</button>
   </div>
 
-  <!-- Bottom Floating Action Button (M3 FAB) -->
-  <button id="save-btn" onclick="openAuthModal()" class="fixed bottom-6 right-6 flex items-center justify-center gap-2 bg-[#a8c7fa] hover:bg-[#c4d7ff] text-[#062e6f] font-semibold py-4 px-5 rounded-[16px] shadow-lg transition-transform hover:scale-105 active:scale-95 z-40">
+  <!-- Sync Master FAB -->
+  <button id="save-btn" onclick="openAuthModal()" class="fixed bottom-6 right-6 flex items-center justify-center gap-2 bg-[#a8c7fa] hover:bg-[#c4d7ff] text-[#062e6f] font-semibold py-4.5 px-5 rounded-[16px] shadow-lg transition-transform hover:scale-105 active:scale-95 z-40">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2".5 d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
     </svg>
     <span class="text-sm tracking-wide">Save to Git</span>
   </button>
@@ -181,15 +172,12 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
-
       <div class="text-center mb-5">
-        <h3 class="text-lg font-bold text-material-text">Enter GitHub PAT to Commit</h3>
-        <p class="text-xs text-material-textMuted mt-1">Authenticate to save changes back to your repository</p>
+        <h3 class="text-base font-bold text-material-text">Enter GitHub PAT to Commit</h3>
+        <p class="text-xs text-material-textMuted mt-1">Authenticate to save updates to GitHub</p>
       </div>
-
       <div class="space-y-4">
         <input type="password" id="pat-input" placeholder="ghp_..." autocomplete="off" class="w-full px-4 py-3 rounded-xl text-sm bg-material-bg border border-material-outlineVariant text-material-text focus:outline-none focus:border-material-primary font-mono">
-        
         <div class="flex gap-2">
           <button onclick="closeAuthModal()" class="flex-1 py-2.5 bg-transparent border border-material-outline text-material-textSecondary rounded-full text-xs font-semibold hover:bg-material-surfaceVariant transition-colors">
             Cancel
@@ -202,17 +190,132 @@
     </div>
   </div>
 
-  <!-- Toast Notification System -->
+  <!-- ADD / EDIT CLIENT MODAL -->
+  <div id="client-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-material-surface w-full max-w-lg rounded-[28px] p-6 border border-material-outlineVariant/30 shadow-2xl max-h-[90vh] flex flex-col my-4">
+      
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center pb-3 border-b border-material-outlineVariant/20 shrink-0">
+        <h3 id="client-modal-title" class="text-base font-bold text-material-text">Edit Client Details</h3>
+        <button onclick="closeClientModal()" class="text-material-textMuted hover:text-material-text transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body (Form Fields) -->
+      <form id="client-form" onsubmit="saveClientForm(event)" class="flex-grow overflow-y-auto space-y-4 py-4 pr-1 text-xs">
+        <input type="hidden" id="form-client-id">
+        
+        <!-- Company & DM -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-material-textSecondary mb-1">Company Name *</label>
+            <input type="text" id="form-company" required class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary">
+          </div>
+          <div>
+            <label class="block font-medium text-material-textSecondary mb-1">Decision Maker (DM) *</label>
+            <input type="text" id="form-dm" required class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary">
+          </div>
+        </div>
+
+        <!-- Location & Status -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-material-textSecondary mb-1">Location *</label>
+            <input type="text" id="form-location" required class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary">
+          </div>
+          <div>
+            <label class="block font-medium text-material-textSecondary mb-1">Pipeline Status</label>
+            <select id="form-status" class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary">
+              <option value="Target Locked">Target Locked</option>
+              <option value="Warm Contact">Warm Contact</option>
+              <option value="Proposal Sent">Proposal Sent</option>
+              <option value="Closed Won">Closed Won</option>
+              <option value="Closed Lost">Closed Lost</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Links -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-material-textSecondary mb-1">LinkedIn Contact</label>
+            <input type="text" id="form-linkedin" placeholder="Active Profile or URL" class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary">
+          </div>
+          <div>
+            <label class="block font-medium text-material-textSecondary mb-1">Website / Domain</label>
+            <input type="text" id="form-website" placeholder="domain.com" class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-material-textSecondary mb-1">Email Address</label>
+            <input type="text" id="form-email" placeholder="contact@email.com" class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary">
+          </div>
+          <div>
+            <label class="block font-medium text-material-textSecondary mb-1">Phone / WhatsApp</label>
+            <input type="text" id="form-phone" placeholder="Phone details" class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-material-textSecondary mb-1">Instagram / Socials</label>
+            <input type="text" id="form-social" placeholder="@handle or tags" class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary">
+          </div>
+          <div>
+            <label class="block font-medium text-material-textSecondary mb-1">Client Response</label>
+            <select id="form-response" class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Pitches & Remarks -->
+        <div>
+          <label class="block font-medium text-material-textSecondary mb-1">The "Trojan Horse" Pitch</label>
+          <textarea id="form-pitch" rows="2" class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-medium text-material-textSecondary mb-1">Pain Points & Remarks</label>
+          <textarea id="form-remarks" rows="2" placeholder="Enter key remarks, paint points, follow ups..." class="w-full px-3 py-2 bg-material-bg border border-material-outlineVariant rounded-lg text-material-text focus:outline-none focus:border-material-primary"></textarea>
+        </div>
+
+        <!-- Form Footer -->
+        <div class="flex gap-2 pt-3 border-t border-material-outlineVariant/20 shrink-0">
+          <button type="button" id="delete-client-btn" onclick="deleteClient()" class="hidden px-4 py-2.5 bg-material-error/10 border border-material-error/30 text-material-error rounded-full font-bold hover:bg-material-error hover:text-material-onError transition-colors mr-auto">
+            Delete
+          </button>
+          
+          <button type="button" onclick="closeClientModal()" class="px-4 py-2.5 bg-transparent border border-material-outline text-material-textSecondary rounded-full font-semibold hover:bg-material-surfaceVariant transition-colors">
+            Cancel
+          </button>
+          
+          <button type="submit" class="px-5 py-2.5 bg-material-primary text-material-onPrimary rounded-full font-bold hover:bg-[#c4d7ff] transition-colors shadow-md">
+            Save
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Feed container -->
   <div id="toast-container" class="fixed bottom-24 left-4 right-4 z-50 flex flex-col gap-2 max-w-sm mx-auto pointer-events-none"></div>
 
-  <!-- Main JavaScript App Logic -->
+  <!-- App Script Logic -->
   <script>
     let clients = [];
     let originalClients = [];
     let currentFilter = 'All';
     let hasUnsavedChanges = false;
 
-    // Load remote/local content on startup
+    // Load assets
     window.addEventListener('DOMContentLoaded', async () => {
       if ('serviceWorker' in navigator) {
         try {
@@ -224,7 +327,7 @@
       await loadData();
     });
 
-    // PWA Prompt
+    // PWA Install Event Handler
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -242,7 +345,7 @@
       }
     });
 
-    // Database Load Strategy
+    // Database Load
     async function loadData() {
       const gitUrl = 'https://raw.githubusercontent.com/smdhussain06/trailwebsite/main/data.json';
       const localUrl = './data.json';
@@ -271,7 +374,6 @@
       renderDashboard();
     }
 
-    // Update numbers and display cards
     function renderDashboard() {
       document.getElementById('stat-total').textContent = clients.length;
       document.getElementById('stat-locked').textContent = clients.filter(c => c.status === 'Target Locked').length;
@@ -281,7 +383,6 @@
       filterClients();
     }
 
-    // Set active category filter chip
     function setFilter(filter) {
       currentFilter = filter;
       const chips = document.querySelectorAll('.tab-chip');
@@ -400,93 +501,89 @@
         return;
       }
 
-      // Render minimal cards
+      // Render cards
       filtered.forEach(client => {
         const card = document.createElement('div');
         
         // Border colors based on status (M3 tonal styling)
         let borderClass = 'border-material-outlineVariant/30';
-        if (client.status === 'Closed Won') borderClass = 'border-emerald-500/30 bg-emerald-950/5';
-        if (client.status === 'Closed Lost') borderClass = 'border-rose-500/30 bg-rose-950/5';
-        if (client.status === 'Warm Contact' || client.status === 'Proposal Sent') borderClass = 'border-indigo-500/30 bg-indigo-950/5';
+        if (client.status === 'Closed Won') borderClass = 'border-emerald-500/40 bg-emerald-950/5';
+        if (client.status === 'Closed Lost') borderClass = 'border-rose-500/40 bg-rose-950/5';
+        if (client.status === 'Warm Contact' || client.status === 'Proposal Sent') borderClass = 'border-indigo-500/45 bg-indigo-950/5';
         
-        card.className = `bg-material-surface border ${borderClass} rounded-[28px] p-5 flex flex-col gap-3.5 transition-all`;
+        // Format link badge styles based on content (Dashed if Needs Extraction, Solid if Filled)
+        const linkConfig = {
+          website: getLinkChip(client.company, client.website, 'Website', 'getWebsiteLink'),
+          linkedin: getLinkChip(client.company, client.linkedin, 'LinkedIn', 'getLinkedinLink', client.dm),
+          email: getLinkChip(client.company, client.email, 'Email', 'getEmailLink'),
+          phone: getLinkChip(client.company, client.phone, 'Phone/WA', 'getPhoneLink'),
+          social: getLinkChip(client.company, client.social, 'Socials', 'getSocialLink')
+        };
+
+        card.className = `bg-material-surface border ${borderClass} rounded-[24px] p-5 flex flex-col gap-3 transition-all relative overflow-hidden`;
         
-        // Render detailed client fields
         card.innerHTML = `
-          <!-- Header (Company & Location) -->
+          <!-- Header (Company & Location & Edit Button) -->
           <div class="flex justify-between items-start gap-2">
-            <div>
+            <div class="min-w-0 flex-grow">
               <a href="${getCompanyLink(client.company)}" target="_blank" class="text-base font-bold text-material-text hover:text-material-primary transition-colors flex items-center gap-1.5">
-                ${client.company}
-                <svg class="w-3 h-3 text-material-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <span class="truncate">${client.company}</span>
+                <svg class="w-3.5 h-3.5 text-material-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                 </svg>
               </a>
               <div class="text-xs text-material-textMuted mt-1">
-                DM: <a href="${getDmLink(client.dm, client.company)}" target="_blank" class="m3-link font-medium">${client.dm}</a>
+                DM: <a href="${getDmLink(client.dm, client.company)}" target="_blank" class="m3-link font-medium hover:underline">${client.dm}</a>
               </div>
             </div>
-            <a href="${getLocationLink(client.location)}" target="_blank" class="shrink-0 text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-material-outlineVariant bg-material-surfaceVariant text-material-textSecondary hover:border-material-primary transition-all flex items-center gap-1">
-              <svg class="w-2.5 h-2.5 text-material-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              </svg>
-              ${client.location}
-            </a>
-          </div>
-
-          <!-- Clickable Detail Fields (Grid Layout) -->
-          <div class="grid grid-cols-2 gap-x-4 gap-y-2 py-2 border-y border-material-outlineVariant/10 text-xs">
-            <!-- LinkedIn -->
-            <div class="flex flex-col gap-0.5">
-              <span class="text-[9px] font-bold text-material-textMuted uppercase tracking-wider">LinkedIn</span>
-              <a href="${getLinkedinLink(client.dm, client.company, client.linkedin)}" target="_blank" class="m3-link truncate">
-                ${client.linkedin}
-              </a>
-            </div>
-            <!-- Website -->
-            <div class="flex flex-col gap-0.5">
-              <span class="text-[9px] font-bold text-material-textMuted uppercase tracking-wider">Website</span>
-              <a href="${getWebsiteLink(client.company, client.website)}" target="_blank" class="m3-link truncate">
-                ${client.website}
-              </a>
-            </div>
-            <!-- Email -->
-            <div class="flex flex-col gap-0.5">
-              <span class="text-[9px] font-bold text-material-textMuted uppercase tracking-wider">Email</span>
-              <a href="${getEmailLink(client.company, client.email)}" target="_blank" class="m3-link truncate">
-                ${client.email}
-              </a>
-            </div>
-            <!-- Phone/WhatsApp -->
-            <div class="flex flex-col gap-0.5">
-              <span class="text-[9px] font-bold text-material-textMuted uppercase tracking-wider">Phone / WhatsApp</span>
-              <a href="${getPhoneLink(client.company, client.phone)}" target="_blank" class="m3-link truncate">
-                ${client.phone}
-              </a>
-            </div>
-            <!-- Social Handle -->
-            <div class="flex flex-col gap-0.5 col-span-2">
-              <span class="text-[9px] font-bold text-material-textMuted uppercase tracking-wider">Instagram / Socials</span>
-              <a href="${getSocialLink(client.company, client.social)}" target="_blank" class="m3-link truncate">
-                ${client.social}
+            
+            <div class="flex items-center gap-1 shrink-0">
+              <!-- Edit Icon Button -->
+              <button onclick="openClientModal(${client.id})" class="p-1.5 text-material-textMuted hover:text-material-primary rounded-full hover:bg-material-surfaceVariant transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                </svg>
+              </button>
+              
+              <!-- Location Tag -->
+              <a href="${getLocationLink(client.location)}" target="_blank" class="text-[9px] font-semibold px-2 py-0.5 rounded-full border border-material-outlineVariant bg-material-surfaceVariant text-material-textSecondary hover:border-material-primary transition-all flex items-center gap-0.5">
+                ${client.location}
               </a>
             </div>
           </div>
 
-          <!-- The Trojan Horse Pitch -->
-          <div class="bg-material-surfaceVariant/45 rounded-2xl p-3 border border-material-outlineVariant/10 flex flex-col gap-1.5">
-            <span class="text-[9px] font-bold text-material-textMuted uppercase tracking-wider">The "Trojan Horse" Pitch</span>
-            <a href="${getPitchLink(client.company, client.pitch)}" target="_blank" class="text-xs text-material-textSecondary hover:text-material-primary leading-relaxed hover:underline block">
-              &ldquo;${client.pitch}&rdquo;
-            </a>
+          <!-- Clickable Action Chips Grid -->
+          <div class="flex flex-wrap gap-1.5 py-1">
+            ${linkConfig.website}
+            ${linkConfig.linkedin}
+            ${linkConfig.email}
+            ${linkConfig.phone}
+            ${linkConfig.social}
           </div>
 
-          <!-- Bottom interactive controls (Status & Response) -->
-          <div class="flex items-center justify-between gap-3 pt-1">
-            <!-- Outlined Select Status -->
-            <div class="flex-grow max-w-[170px]">
-              <select onchange="updateClientField(${client.id}, 'status', this.value)" class="w-full appearance-none bg-material-surface border border-material-outline rounded-full px-4.5 py-1.5 text-xs text-material-textSecondary font-medium focus:outline-none focus:border-material-primary cursor-pointer">
+          <!-- Pitch & Remarks -->
+          <div class="space-y-2 mt-1">
+            <!-- Pitch -->
+            <div class="bg-material-surfaceVariant/45 rounded-xl p-2.5 border border-material-outlineVariant/10">
+              <span class="block text-[8px] font-bold text-material-textMuted uppercase tracking-wider mb-0.5">The "Trojan Horse" Pitch</span>
+              <a href="${getPitchLink(client.company, client.pitch)}" target="_blank" class="text-xs text-material-textSecondary hover:text-material-primary leading-relaxed block hover:underline">
+                &ldquo;${client.pitch}&rdquo;
+              </a>
+            </div>
+            
+            <!-- Remarks / Pain Points -->
+            ${client.remarks ? `
+            <div class="bg-material-bg/40 rounded-xl p-2.5 border border-material-outlineVariant/5">
+              <span class="block text-[8px] font-bold text-material-textMuted uppercase tracking-wider mb-0.5">Pain Points & Remarks</span>
+              <p class="text-xs text-material-textMuted leading-relaxed">${client.remarks}</p>
+            </div>
+            ` : ''}
+          </div>
+
+          <!-- Status Select and Response Toggle Footer -->
+          <div class="flex items-center justify-between gap-3 pt-1 border-t border-material-outlineVariant/10">
+            <div class="flex-grow max-w-[150px]">
+              <select onchange="updateClientField(${client.id}, 'status', this.value)" class="w-full appearance-none bg-material-surface border border-material-outline rounded-full px-3 py-1 text-xs text-material-textSecondary font-medium focus:outline-none focus:border-material-primary cursor-pointer">
                 <option value="Target Locked" ${client.status === 'Target Locked' ? 'selected' : ''}>Target Locked</option>
                 <option value="Warm Contact" ${client.status === 'Warm Contact' ? 'selected' : ''}>Warm Contact</option>
                 <option value="Proposal Sent" ${client.status === 'Proposal Sent' ? 'selected' : ''}>Proposal Sent</option>
@@ -495,8 +592,7 @@
               </select>
             </div>
             
-            <!-- Response Toggle Button (Material Pill Switch) -->
-            <button onclick="toggleResponse(${client.id})" class="flex items-center gap-1.5 px-4.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${client.response === 'Yes' ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400' : 'bg-transparent border-material-outline text-material-textSecondary'}">
+            <button onclick="toggleResponse(${client.id})" class="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border transition-all ${client.response === 'Yes' ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400' : 'bg-transparent border-material-outline text-material-textSecondary'}">
               <span>Resp:</span>
               <span>${client.response === 'Yes' ? 'Yes' : 'No'}</span>
             </button>
@@ -507,33 +603,51 @@
       });
     }
 
-    // Update Client Field Value
-    function updateClientField(id, field, value) {
-      const idx = clients.findIndex(c => c.id === id);
-      if (idx === -1) return;
+    // Dynamic Pill Chip builder
+    function getLinkChip(company, value, label, linkFunc, dmValue = '') {
+      const needsExtraction = !value || value.includes('[Needs Extraction]') || value.toLowerCase().includes('no website') || value.toLowerCase().includes('no digital');
       
-      clients[idx][field] = value;
-      checkUnsavedChangesState();
-      renderDashboard();
+      const link = window[linkFunc](dmValue || company, company, value);
+      
+      if (needsExtraction) {
+        return `
+          <a href="${link}" target="_blank" class="text-[10px] font-medium px-2 py-0.5 rounded-full border border-dashed border-material-error/40 bg-material-error/5 text-material-error hover:bg-material-error/10 transition-colors flex items-center gap-1">
+            🔍 Find ${label}
+          </a>
+        `;
+      } else {
+        return `
+          <a href="${link}" target="_blank" class="text-[10px] font-medium px-2 py-0.5 rounded-full border border-material-primary/40 bg-material-primaryContainer/20 text-material-primary hover:bg-material-primaryContainer/40 transition-colors flex items-center gap-1">
+            ✓ ${label}
+          </a>
+        `;
+      }
     }
 
-    // Toggle client response status
+    // Toggle Response
     function toggleResponse(id) {
       const idx = clients.findIndex(c => c.id === id);
       if (idx === -1) return;
-      
       const newResponse = clients[idx].response === 'Yes' ? 'No' : 'Yes';
       updateClientField(id, 'response', newResponse);
       showToast(`${clients[idx].company} response changed to: ${newResponse}`, 'info');
     }
 
-    // Verify change status against original fetch
+    // Update Local Data state
+    function updateClientField(id, field, value) {
+      const idx = clients.findIndex(c => c.id === id);
+      if (idx === -1) return;
+      clients[idx][field] = value;
+      checkUnsavedChangesState();
+      renderDashboard();
+    }
+
+    // Verify git diff state
     function checkUnsavedChangesState() {
       hasUnsavedChanges = JSON.stringify(clients) !== JSON.stringify(originalClients);
       updateSyncStatus(hasUnsavedChanges);
     }
 
-    // Sync button status colors
     function updateSyncStatus(unsaved) {
       const badge = document.getElementById('sync-badge');
       const saveBtn = document.getElementById('save-btn');
@@ -541,17 +655,152 @@
       if (unsaved) {
         badge?.classList.remove('hidden');
         if (saveBtn) {
-          saveBtn.className = "fixed bottom-6 right-6 flex items-center justify-center gap-2 bg-[#ffb4ab] hover:bg-[#ffdad6] text-[#690005] font-semibold py-4 px-5 rounded-[16px] shadow-lg transition-transform hover:scale-105 active:scale-95 animate-bounce z-40";
+          saveBtn.className = "fixed bottom-6 right-6 flex items-center justify-center gap-2 bg-[#ffb4ab] hover:bg-[#ffdad6] text-[#690005] font-semibold py-4.5 px-5 rounded-[16px] shadow-lg transition-transform hover:scale-105 active:scale-95 animate-bounce z-40";
         }
       } else {
         badge?.classList.add('hidden');
         if (saveBtn) {
-          saveBtn.className = "fixed bottom-6 right-6 flex items-center justify-center gap-2 bg-[#a8c7fa] hover:bg-[#c4d7ff] text-[#062e6f] font-semibold py-4 px-5 rounded-[16px] shadow-lg transition-transform hover:scale-105 active:scale-95 z-40";
+          saveBtn.className = "fixed bottom-6 right-6 flex items-center justify-center gap-2 bg-[#a8c7fa] hover:bg-[#c4d7ff] text-[#062e6f] font-semibold py-4.5 px-5 rounded-[16px] shadow-lg transition-transform hover:scale-105 active:scale-95 z-40";
         }
       }
     }
 
-    // Auth Modal Controls
+    // OPEN ADD / EDIT LEAD MODAL
+    function openClientModal(id) {
+      const title = document.getElementById('client-modal-title');
+      const deleteBtn = document.getElementById('delete-client-btn');
+      const form = document.getElementById('client-form');
+      
+      if (!title || !form) return;
+      
+      form.reset();
+      
+      if (id === null) {
+        // Adding client mode
+        title.textContent = 'Add New Target';
+        document.getElementById('form-client-id').value = '';
+        if (deleteBtn) deleteBtn.classList.add('hidden');
+        
+        // Defaults
+        document.getElementById('form-status').value = 'Target Locked';
+        document.getElementById('form-response').value = 'No';
+      } else {
+        // Editing client mode
+        const client = clients.find(c => c.id === id);
+        if (!client) return;
+        
+        title.textContent = 'Edit Client Record';
+        document.getElementById('form-client-id').value = client.id;
+        document.getElementById('form-company').value = client.company || '';
+        document.getElementById('form-dm').value = client.dm || '';
+        document.getElementById('form-location').value = client.location || '';
+        document.getElementById('form-status').value = client.status || 'Target Locked';
+        document.getElementById('form-linkedin').value = client.linkedin || '';
+        document.getElementById('form-website').value = client.website || '';
+        document.getElementById('form-email').value = client.email || '';
+        document.getElementById('form-phone').value = client.phone || '';
+        document.getElementById('form-social').value = client.social || '';
+        document.getElementById('form-response').value = client.response || 'No';
+        document.getElementById('form-pitch').value = client.pitch || '';
+        document.getElementById('form-remarks').value = client.remarks || '';
+        
+        if (deleteBtn) deleteBtn.classList.remove('hidden');
+      }
+      
+      document.getElementById('client-modal')?.classList.remove('hidden');
+    }
+
+    function closeClientModal() {
+      document.getElementById('client-modal')?.classList.add('hidden');
+    }
+
+    // SAVE CLIENT FORM ACTION
+    function saveClientForm(e) {
+      e.preventDefault();
+      
+      const idVal = document.getElementById('form-client-id').value;
+      const companyVal = document.getElementById('form-company').value.trim();
+      const dmVal = document.getElementById('form-dm').value.trim();
+      const locationVal = document.getElementById('form-location').value.trim();
+      const statusVal = document.getElementById('form-status').value;
+      const linkedinVal = document.getElementById('form-linkedin').value.trim() || '[Needs Extraction]';
+      const websiteVal = document.getElementById('form-website').value.trim() || '[Needs Extraction]';
+      const emailVal = document.getElementById('form-email').value.trim() || '[Needs Extraction]';
+      const phoneVal = document.getElementById('form-phone').value.trim() || '[Needs Extraction]';
+      const socialVal = document.getElementById('form-social').value.trim() || '[Needs Extraction]';
+      const responseVal = document.getElementById('form-response').value;
+      const pitchVal = document.getElementById('form-pitch').value.trim();
+      const remarksVal = document.getElementById('form-remarks').value.trim();
+      
+      if (!companyVal || !dmVal || !locationVal) {
+        showToast('Required fields are missing', 'error');
+        return;
+      }
+      
+      if (idVal === '') {
+        // Add new target
+        const newClient = {
+          id: Date.now(), // Generate numeric unique ID
+          company: companyVal,
+          dm: dmVal,
+          location: locationVal,
+          status: statusVal,
+          linkedin: linkedinVal,
+          website: websiteVal,
+          email: emailVal,
+          phone: phoneVal,
+          social: socialVal,
+          response: responseVal,
+          pitch: pitchVal,
+          remarks: remarksVal
+        };
+        clients.push(newClient);
+        showToast(`Added ${companyVal} to pipeline`, 'success');
+      } else {
+        // Edit existing target
+        const targetId = parseInt(idVal);
+        const idx = clients.findIndex(c => c.id === targetId);
+        if (idx !== -1) {
+          clients[idx].company = companyVal;
+          clients[idx].dm = dmVal;
+          clients[idx].location = locationVal;
+          clients[idx].status = statusVal;
+          clients[idx].linkedin = linkedinVal;
+          clients[idx].website = websiteVal;
+          clients[idx].email = emailVal;
+          clients[idx].phone = phoneVal;
+          clients[idx].social = socialVal;
+          clients[idx].response = responseVal;
+          clients[idx].pitch = pitchVal;
+          clients[idx].remarks = remarksVal;
+          showToast(`Updated details for ${companyVal}`, 'success');
+        }
+      }
+      
+      closeClientModal();
+      checkUnsavedChangesState();
+      renderDashboard();
+    }
+
+    // DELETE CLIENT
+    function deleteClient() {
+      const idVal = document.getElementById('form-client-id').value;
+      if (idVal === '') return;
+      
+      const targetId = parseInt(idVal);
+      const client = clients.find(c => c.id === targetId);
+      if (!client) return;
+      
+      if (confirm(`Are you sure you want to delete ${client.company} from the CRM?`)) {
+        clients = clients.filter(c => c.id !== targetId);
+        showToast(`Removed ${client.company}`, 'warning');
+        closeClientModal();
+        checkUnsavedChangesState();
+        renderDashboard();
+      }
+    }
+
+    // Authentication modal visibility controls
     function openAuthModal() {
       document.getElementById('auth-modal')?.classList.remove('hidden');
       const input = document.getElementById('pat-input');
@@ -567,18 +816,20 @@
       if (input) input.value = '';
     }
 
-    // Custom M3 Bottom Toast Feedback
+    // M3 Notification Toast
     function showToast(message, type = 'info') {
       const container = document.getElementById('toast-container');
       if (!container) return;
 
       const toast = document.createElement('div');
-      toast.className = 'p-3.5 rounded-[12px] shadow-xl text-xs font-semibold text-center border pointer-events-auto transition-opacity duration-300';
+      toast.className = 'p-3 rounded-[12px] shadow-xl text-xs font-semibold text-center border pointer-events-auto transition-opacity duration-300';
       
       if (type === 'success') {
         toast.className += ' bg-[#0f2d1e] border-emerald-500/40 text-emerald-300';
       } else if (type === 'error') {
         toast.className += ' bg-[#3b0b0f] border-rose-500/40 text-rose-300';
+      } else if (type === 'warning') {
+        toast.className += ' bg-[#3a2205] border-amber-500/40 text-amber-300';
       } else {
         toast.className += ' bg-[#1a1c22] border-material-outlineVariant text-material-textSecondary';
       }
@@ -589,15 +840,15 @@
       setTimeout(() => {
         toast.classList.add('opacity-0');
         setTimeout(() => toast.remove(), 300);
-      }, 3000);
+      }, 3500);
     }
 
-    // Safe UTF-8 to base64
+    // Safe base64
     function encodeBase64(str) {
       return btoa(unescape(encodeURIComponent(str)));
     }
 
-    // PUSH DATA TO GITHUB VIA REST API
+    // REST API PUSH
     async function executeGitSync() {
       const patInput = document.getElementById('pat-input');
       let token = patInput ? patInput.value.trim() : '';
