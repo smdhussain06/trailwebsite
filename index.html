@@ -938,7 +938,8 @@
     // REST API PUSH
     async function executeGitSync() {
       const patInput = document.getElementById('pat-input');
-      let token = patInput ? patInput.value.trim() : '';
+      // Strip all invisible characters, spaces, and non-alphanumeric characters (except underscores)
+      let token = patInput ? patInput.value.replace(/[^a-zA-Z0-9_]/g, '') : '';
 
       if (!token) {
         showToast('Valid GitHub token is required.', 'error');
