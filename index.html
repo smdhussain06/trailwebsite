@@ -961,11 +961,15 @@
           }
         });
 
-        if (getResponse.ok) {
+        if (getResponse.status === 401) {
+          throw new Error('Unauthorized (401). Check if your token is correct.');
+        } else if (getResponse.status === 403) {
+          throw new Error('Forbidden (403). Rate limit exceeded or token lacks scopes.');
+        } else if (getResponse.ok) {
           const contents = await getResponse.json();
           sha = contents.sha;
         } else if (getResponse.status !== 404) {
-          throw new Error('Connection refused by API');
+          throw new Error(`API Error: ${getResponse.statusText} (${getResponse.status})`);
         }
 
         const putBody = {
@@ -984,14 +988,21 @@
           body: JSON.stringify(putBody)
         });
 
-        if (!putResponse.ok) throw new Error('Failed to save file');
+        if (putResponse.status === 401) {
+          throw new Error('Write Unauthorized (401). Check token scopes.');
+        } else if (putResponse.status === 403) {
+          throw new Error('Write Forbidden (403). Ensure token has "repo" (write) scope.');
+        } else if (!putResponse.ok) {
+          throw new Error(`Write Failed: ${putResponse.statusText} (${putResponse.status})`);
+        }
 
         originalClients = JSON.parse(JSON.stringify(clients));
         hasUnsavedChanges = false;
         updateSyncStatus(false);
         showToast('Sync successful!', 'success');
       } catch (err) {
-        showToast('Sync failed: Network or Auth error', 'error');
+        console.error('Sync failed:', err);
+        showToast('Sync failed: ' + err.message, 'error');
       } finally {
         token = '';
         if (patInput) patInput.value = '';
